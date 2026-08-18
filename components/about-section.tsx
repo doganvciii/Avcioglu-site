@@ -1,7 +1,9 @@
-const stats = [
-  { value: 'Antalya', label: 'Merkez Ofis' },
-  { value: 'Modern', label: 'Mimari Anlayış' },
-  { value: 'Nitelikli', label: 'Yaşam Alanları' },
+import { Logo } from './logo'
+
+const cards = [
+  { title: 'İLK ÇİZGİDEN TESLİME', subtitle: 'Taslaktan Anahtar Teslime Tam Süreç' },
+  { title: 'KÖKLÜ TİCARİ GEÇMİŞ', subtitle: 'Turizm & Mağazacılık Güvencesi' },
+  { title: 'İMZALI MİMARİ', subtitle: 'Detaylarda Mimar Titizliği' },
 ]
 
 export function AboutSection() {
@@ -15,9 +17,8 @@ export function AboutSection() {
               alt="Avcıoğlu Group mimari detay, beton ve cam dokusu"
               className="w-full rounded-md object-cover"
             />
-            <div className="absolute -bottom-6 -right-6 hidden rounded-md border border-primary/30 bg-background px-8 py-6 lg:block">
-              <p className="font-serif text-3xl font-semibold text-primary">Avcıoğlu</p>
-              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Group</p>
+            <div className="absolute left-6 bottom-6 hidden lg:block">
+              <Logo className="h-20 w-auto" />
             </div>
           </div>
 
@@ -29,26 +30,27 @@ export function AboutSection() {
             <h2 className="text-balance font-serif text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
               Estetik ve Mühendisliği Bir Araya Getiriyoruz
             </h2>
+
             <p className="mt-6 text-pretty text-lg leading-relaxed text-muted-foreground">
-              Avcıoğlu Group olarak Antalya&apos;da; modern mimariyi, sağlam mühendisliği ve
-              zamansız estetiği bir araya getiren projeler geliştiriyoruz. Her projemizde yaşam
-              kalitesini, çevreye duyarlılığı ve detaylara verdiğimiz önemi ön planda tutuyoruz.
-            </p>
-            <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
-              Amacımız yalnızca bina inşa etmek değil; insanların huzurla yaşayacağı, değer
-              kazanan nitelikli yaşam alanları üretmektir.
+              Avcıoğlu Group; turizm ve mağazacılıkla Antalya’nın kalbinde başlayan köklü ticari
+              yolculuğunu, bugün mimarlık ve inşaatın estetik vizyonuyla taçlandırıyor.
             </p>
 
-            <dl className="mt-10 grid grid-cols-3 gap-6 border-t border-border pt-8">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <dt className="font-serif text-2xl font-semibold text-primary">{s.value}</dt>
-                  <dd className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
-                    {s.label}
-                  </dd>
+            <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
+              Kalemimizin kâğıda ilk dokunduğu mimari taslaktan, kapıdaki anahtarın teslimine kadar
+              tüm süreci kendi bünyemizde sanata dönüştürüyoruz. Mağazacılık geçmişimizden gelen
+              sarsılmaz ticari disiplini mimar titizliğiyle buluşturuyor; kent dokusuna saygılı, zamana
+              meydan okuyan ve değer kazanan imzalı yaşam alanları yükseltiyoruz.
+            </p>
+
+            <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {cards.map((c) => (
+                <div key={c.title} className="rounded-sm border border-border bg-card/50 p-4 text-center">
+                  <h4 className="font-serif text-sm font-semibold text-foreground">{c.title}</h4>
+                  <p className="mt-2 text-xs text-muted-foreground">{c.subtitle}</p>
                 </div>
               ))}
-            </dl>
+            </div>
           </div>
         </div>
       </div>
