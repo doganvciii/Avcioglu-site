@@ -28,10 +28,8 @@ const projects: Project[] = [
     ],
     gallery: [
       { src: '/images/zenit/zenit-1.jpg', alt: 'Zenit projesi gündüz cephe görünümü ve peyzaj' },
-      { src: '/images/zenit/zenit-5.jpg', alt: 'Zenit projesi alacakaranlıkta cephe görünümü, sıcak iç aydınlatma' },
       { src: '/images/zenit/zenit-4.jpg', alt: 'Zenit projesi köşe görünümü ve sokak peyzajı' },
       { src: '/images/zenit/zenit-3.jpg', alt: 'Zenit projesi giriş cephesi yakın çekim' },
-      { src: '/images/zenit/zenit-6.jpg', alt: 'Zenit projesi akşam giriş kapısı ve aydınlatmalı logo' },
       { src: '/images/zenit/zenit-2.jpg', alt: 'Zenit projesi giriş kapısı ve çevre düzenlemesi' },
       { src: '/images/zenit/zenit-7.jpg', alt: 'Zenit projesi çocuk oyun parkı ve sosyal alanlar' },
       { src: '/images/zenit/zenit-8.jpg', alt: 'Zenit projesi havadan yerleşim planı, otopark ve peyzaj' },
@@ -42,7 +40,7 @@ const projects: Project[] = [
     name: 'Coastline',
     status: 'Satışta',
     description:
-      'Zarif koyu cephesi, altın aksan aydınlatması ve şık köşe balkonlarıyla şehrin merkezinde sahil hattına yürüme mesafesinde prestijli bir yaşam sunan seçkin bir konut projesi.',
+      "Antalya'nın önemli noktalarına yürüme mesafesinde konumlanan bu proje, modern tasarımı, konforlu yaşam alanları ve prestijli adresiyle fark yaratacak bir konut projesi.",
     features: [
       { icon: Sparkles, label: 'Özel Cephe Aydınlatması' },
       { icon: Building2, label: 'Modern Mimari' },
@@ -66,6 +64,8 @@ const projects: Project[] = [
       { icon: Building2, label: 'Modern Mimari Dil' },
       { icon: CarFront, label: 'Geniş Otopark Alanı' },
       { icon: ShieldCheck, label: 'Güvenli ve Konforlu Yaşam' },
+      { icon: Waves, label: 'Yüzme Havuzu' },
+      { icon: Trees, label: 'Panoramik Manzara' },
     ],
     gallery: [
       { src: '/images/mirada/1.jpg', alt: 'Mirada projesi cephe görünümü ve giriş tasarımı' },
@@ -77,7 +77,7 @@ const projects: Project[] = [
   {
     id: 'verda',
     name: 'Verda',
-    status: 'Planlanan',
+    status: 'SATIŞTA',
     description:
       'Antalya / Döşemealtı konumunda yer alan Verda, modern konut projesi; geniş balkonlar ve kaliteli dış cephe detayları sunar.',
     features: [
@@ -131,7 +131,7 @@ const projects: Project[] = [
   {
     id: 'vesta',
     name: 'Vesta',
-    status: 'Satışta',
+    status: '',
     description:
       'Antalya / Kepez konumunda yer alan Vesta, modern ahşap ve antrasit mimari cepheye sahip konut projesidir.',
     features: [
@@ -148,12 +148,11 @@ const projects: Project[] = [
   {
     id: 'corner-apartments',
     name: 'Corner Apartments',
-    status: 'Satışta',
+    status: '',
     description:
       'Modern mimari çizgileri, ticari alttabanı ve estetik dış cephe kaplamasıyla Kepez\'e değer katan imzalı proje.',
     features: [
       { icon: CarFront, label: 'Zemin katta geniş vitrinli ticari dükkan/mağaza alanları' },
-      { icon: Building2, label: 'Antrasit ve ahşap dokulu modern kompozit cephe' },
       { icon: Waves, label: 'Geniş balkon kullanımı ve mimari detaylarda fonksiyonellik' },
     ],
     gallery: [
@@ -216,7 +215,7 @@ export function ProjectsSection() {
               aria-selected={i === tab}
               aria-controls={`panel-${p.id}`}
               onClick={() => selectTab(i)}
-              className={`relative -mb-px flex-1 text-center whitespace-nowrap text-[clamp(0.75rem,1.2vw,1.25rem)] px-3 py-2 sm:px-5 sm:py-3 font-serif font-semibold transition-colors ${
+              className={`relative -mb-px flex-1 text-center whitespace-nowrap text-[clamp(0.9rem,1.6vw,1.35rem)] px-3 py-2 sm:px-5 sm:py-3 font-serif font-semibold transition-colors ${
                 i === tab ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -243,7 +242,7 @@ export function ProjectsSection() {
               <img
                 src={gallery[active].src || "/placeholder.svg"}
                 alt={gallery[active].alt}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
               {project.status && (
