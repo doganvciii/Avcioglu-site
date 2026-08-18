@@ -109,6 +109,25 @@ const projects: Project[] = [
       { src: '/solis-2.jpg', alt: 'Solis projesi gündüz cephe görünümü ve led detaylar' },
     ],
   },
+  {
+    id: 'life',
+    name: 'Life',
+    status: '',
+    description:
+      'Antalya / Kepez konumunda yer alan Life, tamamlanmış bir konut projesidir. Koyu ahşap ve antrasit cephe detayları ile modern bir tasarım sunar.',
+    features: [
+      { icon: ToyBrick, label: 'Koyu Ahşap Panel & Antrasit Mimari Cephe' },
+      { icon: Building2, label: 'Dikey Çıta Detaylı Özel Cephe Tasarımı' },
+      { icon: Waves, label: 'Fransız Balkon & Siyah Alüminyum Korkuluklar' },
+      { icon: ShieldCheck, label: 'Asansör & Şifreli Bina Giriş Güvenliği' },
+      { icon: Sparkles, label: 'Otomatik Panjur & Ankastre Mutfak Seti' },
+      { icon: ShieldCheck, label: 'Görüntülü Diyafon & Kamera Güvenlik Sistemi' },
+    ],
+    gallery: [
+      { src: '/life-1.jpg', alt: 'Life projesi cephe ön görünüm' },
+      { src: '/life-2.jpg', alt: 'Life projesi açıdan cephe ve balkonlar' },
+    ],
+  },
 ]
 
 export function ProjectsSection() {
@@ -194,9 +213,11 @@ export function ProjectsSection() {
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
-              <span className="absolute left-6 top-6 rounded-sm bg-background/80 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.25em] text-primary backdrop-blur">
-                {project.status}
-              </span>
+              {project.status && (
+                <span className="absolute left-6 top-6 rounded-sm bg-background/80 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.25em] text-primary backdrop-blur">
+                  {project.status}
+                </span>
+              )}
             </button>
 
             <div className="grid grid-cols-4 gap-3">
