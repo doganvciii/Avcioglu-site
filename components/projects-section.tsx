@@ -74,6 +74,22 @@ const projects: Project[] = [
       { src: '/images/mirada/4.jpg', alt: 'Mirada projesi havuz ve bahçe yaşam alanı' },
     ],
   },
+  {
+    id: 'verda',
+    name: 'Verda',
+    status: 'Planlanan',
+    description:
+      'Antalya / Döşemealtı konumunda yer alan Verda, modern konut projesi; geniş balkonlar ve kaliteli dış cephe detayları sunar.',
+    features: [
+      { icon: Sparkles, label: 'Dış Cephe Gizli LED Aydınlatma' },
+      { icon: Building2, label: 'Ahşap Kompozit Detaylar' },
+      { icon: CarFront, label: 'Geniş Balkonlu Lüks Daireler' },
+    ],
+    gallery: [
+      { src: '/1 kopya.jpg', alt: 'Verda projesi cephe ve balkonlar' },
+      { src: '/2 kopya.jpg', alt: 'Verda projesi akşam cephe aydınlatması' },
+    ],
+  },
 ]
 
 export function ProjectsSection() {
