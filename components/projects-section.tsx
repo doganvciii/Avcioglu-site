@@ -206,7 +206,7 @@ export function ProjectsSection() {
         </div>
 
         {/* Tabs */}
-        <div role="tablist" aria-label="Projeler" className="mt-12 flex flex-wrap gap-2 border-b border-border">
+        <div role="tablist" aria-label="Projeler" className="mt-12 w-full flex flex-nowrap justify-between items-center gap-2 sm:gap-3 border-b border-border overflow-x-auto">
           {projects.map((p, i) => (
             <button
               key={p.id}
@@ -216,7 +216,7 @@ export function ProjectsSection() {
               aria-selected={i === tab}
               aria-controls={`panel-${p.id}`}
               onClick={() => selectTab(i)}
-              className={`relative -mb-px px-5 py-3 font-serif text-2xl font-semibold transition-colors sm:text-3xl ${
+              className={`relative -mb-px flex-1 text-center whitespace-nowrap text-[clamp(0.75rem,1.2vw,1.25rem)] px-3 py-2 sm:px-5 sm:py-3 font-serif font-semibold transition-colors ${
                 i === tab ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
