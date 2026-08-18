@@ -128,6 +128,23 @@ const projects: Project[] = [
       { src: '/life-2.jpg', alt: 'Life projesi açıdan cephe ve balkonlar' },
     ],
   },
+  {
+    id: 'vesta',
+    name: 'Vesta',
+    status: 'Satışta',
+    description:
+      'Antalya / Kepez konumunda yer alan Vesta, modern ahşap ve antrasit mimari cepheye sahip konut projesidir.',
+    features: [
+      { icon: Building2, label: 'Modern Ahşap & Antrasit Mimari Cephe' },
+      { icon: Sparkles, label: 'Özel Dikey Çıta & Gizli LED Aydınlatma Detayları' },
+      { icon: Waves, label: 'Geniş Balkonlar & Siyah Alüminyum Korkuluk Sistemleri' },
+      { icon: CarFront, label: 'Açık Otopark Area & Özel Çevre Düzenlemesi' },
+    ],
+    gallery: [
+      { src: '/vesta-1.jpg', alt: 'Vesta projesi cephe ve balkonlar' },
+      { src: '/vesta-2.jpg', alt: 'Vesta projesi gündüz cephe görünümü' },
+    ],
+  },
 ]
 
 export function ProjectsSection() {
