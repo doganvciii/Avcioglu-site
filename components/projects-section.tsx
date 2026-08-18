@@ -145,6 +145,22 @@ const projects: Project[] = [
       { src: '/vesta-2.jpg', alt: 'Vesta projesi gündüz cephe görünümü' },
     ],
   },
+  {
+    id: 'corner-apartments',
+    name: 'Corner Apartments',
+    status: 'Satışta',
+    description:
+      'Modern mimari çizgileri, ticari alttabanı ve estetik dış cephe kaplamasıyla Kepez\'e değer katan imzalı proje.',
+    features: [
+      { icon: CarFront, label: 'Zemin katta geniş vitrinli ticari dükkan/mağaza alanları' },
+      { icon: Building2, label: 'Antrasit ve ahşap dokulu modern kompozit cephe' },
+      { icon: Waves, label: 'Geniş balkon kullanımı ve mimari detaylarda fonksiyonellik' },
+    ],
+    gallery: [
+      { src: '/images/corner/corner-1.jpg', alt: 'Corner Apartments cephe ve ticari zemin görünümü' },
+      { src: '/images/corner/corner-2.jpg', alt: 'Corner Apartments balkondan görünüm ve cephe detayları' },
+    ],
+  },
 ]
 
 export function ProjectsSection() {
