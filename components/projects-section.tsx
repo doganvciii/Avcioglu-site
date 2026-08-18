@@ -90,6 +90,25 @@ const projects: Project[] = [
       { src: '/2 kopya.jpg', alt: 'Verda projesi akşam cephe aydınlatması' },
     ],
   },
+  {
+    id: 'solis',
+    name: 'Solis',
+    status: 'Satışta',
+    description:
+      'Antalya / Kepez (Çamlıbel) konumunda yer alan Solis, butik konut projesi; modern dış cephe ve gelişmiş güvenlik/konfor özellikleri sunar.',
+    features: [
+      { icon: Building2, label: 'Modern Dış Cephe Mimarisi' },
+      { icon: Sparkles, label: 'Dikey Dış Cephe LED Aydınlatma' },
+      { icon: Waves, label: 'Lüks Cam Balkon Korkulukları' },
+      { icon: ShieldCheck, label: 'Asansör & Şifreli Giriş Sistemi' },
+      { icon: ToyBrick, label: 'Otomatik Panjur' },
+      { icon: ShieldCheck, label: 'Görüntülü Diyafon & Güvenlik Kamerası' },
+    ],
+    gallery: [
+      { src: '/solis-1.jpg', alt: 'Solis projesi cephe ve balkonlar' },
+      { src: '/solis-2.jpg', alt: 'Solis projesi gündüz cephe görünümü ve led detaylar' },
+    ],
+  },
 ]
 
 export function ProjectsSection() {
