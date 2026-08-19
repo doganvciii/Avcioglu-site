@@ -178,6 +178,27 @@ export function ProjectsSection() {
     setActive(0)
   }
 
+  const tabListRef = useRef<HTMLDivElement | null>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  useEffect(() => {
+    const el = tabListRef.current
+    if (!el) return
+    const update = () => {
+      setCanScrollLeft(el.scrollLeft > 5)
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 5)
+    }
+    // run once to initialize
+    update()
+    el.addEventListener('scroll', update)
+    window.addEventListener('resize', update)
+    return () => {
+      el.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [projects.length])
+
   useEffect(() => {
     if (!lightbox) return
     const onKey = (e: KeyboardEvent) => {
@@ -205,24 +226,70 @@ export function ProjectsSection() {
         </div>
 
         {/* Tabs */}
-        <div role="tablist" aria-label="Projeler" className="mt-12 w-full flex flex-nowrap justify-between items-center gap-2 sm:gap-3 border-b border-border overflow-x-auto">
-          {projects.map((p, i) => (
+        <div className="mt-12 w-full relative">
+          <div
+            role="tablist"
+            aria-label="Projeler"
+            ref={tabListRef}
+            className="hide-scrollbar w-full flex flex-nowrap justify-between items-center gap-2 sm:gap-3 border-b border-border overflow-x-auto"
+          >
+            {projects.map((p, i) => (
+              <button
+                key={p.id}
+                role="tab"
+                type="button"
+                id={`tab-${p.id}`}
+                aria-selected={i === tab}
+                aria-controls={`panel-${p.id}`}
+                onClick={() => selectTab(i)}
+                className={`relative -mb-px flex-1 text-center whitespace-nowrap text-[clamp(0.9rem,1.6vw,1.35rem)] px-3 py-2 sm:px-5 sm:py-3 font-serif font-semibold transition-colors ${
+                  i === tab ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {p.name}
+                {i === tab && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />}
+              </button>
+            ))}
+          </div>
+
+          {/* Left triangle navigation */}
+          {canScrollLeft && (
             <button
-              key={p.id}
-              role="tab"
               type="button"
-              id={`tab-${p.id}`}
-              aria-selected={i === tab}
-              aria-controls={`panel-${p.id}`}
-              onClick={() => selectTab(i)}
-              className={`relative -mb-px flex-1 text-center whitespace-nowrap text-[clamp(0.9rem,1.6vw,1.35rem)] px-3 py-2 sm:px-5 sm:py-3 font-serif font-semibold transition-colors ${
-                i === tab ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-              }`}
+              aria-label="Önceki projeler"
+              onClick={() => { tabListRef.current?.scrollBy({ left: -240, behavior: 'smooth' }) }}
+              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-white transition-all hover:brightness-110"
             >
-              {p.name}
-              {i === tab && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" className="rotate-180">
+                <path d="M12 4l8 8-8 8-8-8z" />
+              </svg>
             </button>
-          ))}
+          )}
+
+          {/* Right gradient fade to indicate more content */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-20 hidden sm:block">
+            <div className="absolute inset-0 bg-gradient-to-l from-black via-black/80 to-transparent opacity-70" />
+          </div>
+
+          {/* Right triangle navigation */}
+          {canScrollRight && (
+            <button
+              type="button"
+              aria-label="Daha fazla projeler"
+              onClick={() => { tabListRef.current?.scrollBy({ left: 240, behavior: 'smooth' }) }}
+              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-white transition-all hover:brightness-110"
+              style={{ pointerEvents: 'auto' }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4l8 8-8 8-8-8z" />
+              </svg>
+            </button>
+          )}
+
+          <style jsx global>{`
+            .hide-scrollbar::-webkit-scrollbar { display: none; }
+            .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          `}</style>
         </div>
 
         <article
