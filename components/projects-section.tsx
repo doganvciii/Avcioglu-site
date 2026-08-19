@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Trees, ToyBrick, CarFront, Building2, Waves, Sparkles, ShieldCheck, ArrowUpRight, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Feature = { icon: typeof Trees; label: string }
@@ -176,119 +176,14 @@ export function ProjectsSection() {
   const selectTab = (i: number) => {
     setTab(i)
     setActive(0)
+    setPeekStopped(true)
   }
 
-  const tabListRef = useRef<HTMLDivElement | null>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(false)
+  // Arrow visibility and scroll calculations removed; kept a simple static navigation
 
-  useEffect(() => {
-    const el = tabListRef.current
-    if (!el) return
-    const update = () => {
-      setCanScrollLeft(el.scrollLeft > 5)
-      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 5)
-    }
-    // run once to initialize
-    update()
-    el.addEventListener('scroll', update)
-    window.addEventListener('resize', update)
-    return () => {
-      el.removeEventListener('scroll', update)
-      window.removeEventListener('resize', update)
-    }
-  }, [projects.length])
 
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const peekDoneRef = useRef(false)
-  const peekCancelledRef = useRef(false)
-  const peekAnimRef = useRef<number | null>(null)
-
-  useEffect(() => {
-    const el = tabListRef.current
-    const sec = sectionRef.current
-    if (!el || !sec || peekDoneRef.current) return
-
-    const cancelPeek = () => {
-      peekCancelledRef.current = true
-      if (peekAnimRef.current) { cancelAnimationFrame(peekAnimRef.current); peekAnimRef.current = null }
-    }
-
-    const onUserInteraction = () => cancelPeek()
-
-    el.addEventListener('scroll', onUserInteraction, { passive: true })
-    el.addEventListener('pointerdown', onUserInteraction)
-
-    const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t)
-
-    const animateTo = (targetLeft: number, duration: number) => {
-      return new Promise<void>((resolve) => {
-        const startLeft = el.scrollLeft
-        const change = targetLeft - startLeft
-        const startTime = performance.now()
-
-        const step = (now: number) => {
-          if (peekCancelledRef.current) { peekAnimRef.current = null; resolve(); return }
-          const elapsed = now - startTime
-          const t = Math.min(1, elapsed / duration)
-          const eased = easeInOut(t)
-          el.scrollLeft = Math.round(startLeft + change * eased)
-          if (t < 1) {
-            peekAnimRef.current = requestAnimationFrame(step)
-          } else {
-            peekAnimRef.current = null
-            resolve()
-          }
-        }
-
-        peekAnimRef.current = requestAnimationFrame(step)
-      })
-    }
-
-    const pause = (ms: number) => {
-      return new Promise<void>((resolve) => {
-        const start = performance.now()
-        const step = (now: number) => {
-          if (peekCancelledRef.current) { peekAnimRef.current = null; resolve(); return }
-          if (now - start >= ms) { peekAnimRef.current = null; resolve(); return }
-          peekAnimRef.current = requestAnimationFrame(step)
-        }
-        peekAnimRef.current = requestAnimationFrame(step)
-      })
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(async (entry) => {
-        if (entry.isIntersecting && !peekDoneRef.current && !peekCancelledRef.current) {
-          peekDoneRef.current = true
-          const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth)
-          const distance = Math.min(100, maxScroll, 100)
-          const target = Math.min(distance, maxScroll)
-          try {
-            // gentle right slide over 1800ms
-            await animateTo(target, 1800)
-            if (peekCancelledRef.current) return
-            // pause 400ms without using setTimeout
-            await pause(400)
-            if (peekCancelledRef.current) return
-            // return to start over 1800ms
-            await animateTo(0, 1800)
-          } catch (e) {
-            // ignore
-          }
-        }
-      })
-    }, { threshold: 0.12 })
-
-    observer.observe(sec)
-
-    return () => {
-      observer.disconnect()
-      el.removeEventListener('scroll', onUserInteraction)
-      el.removeEventListener('pointerdown', onUserInteraction)
-      cancelPeek()
-    }
-  }, [])
+  // Peek animation is handled purely via CSS keyframes. JS-based scroll/timeout logic removed.
+  const [peekStopped, setPeekStopped] = useState(false)
 
   useEffect(() => {
     if (!lightbox) return
@@ -321,9 +216,10 @@ export function ProjectsSection() {
           <div
             role="tablist"
             aria-label="Projeler"
-            ref={tabListRef}
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            className="w-full flex-1 flex flex-nowrap justify-between items-center gap-2 sm:gap-3 border-b border-border overflow-y-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden"
+            onScroll={() => setPeekStopped(true)}
+            onPointerDown={() => setPeekStopped(true)}
+            onTouchStart={() => setPeekStopped(true)}
+            className={`w-full flex-1 flex flex-nowrap justify-between items-center gap-2 sm:gap-3 border-b border-border overflow-y-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden ${!peekStopped ? 'peek-animate' : ''}`}
           >
             {projects.map((p, i) => (
               <button
@@ -345,40 +241,49 @@ export function ProjectsSection() {
           </div>
 
           {/* Left triangle navigation */}
-          {canScrollLeft && (
-            <button
-              type="button"
-              aria-label="Önceki projeler"
-              onClick={() => { tabListRef.current?.scrollBy({ left: -240, behavior: 'smooth' }) }}
-              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-white transition-all hover:brightness-110"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" className="rotate-180">
-                <path d="M12 4l8 8-8 8-8-8z" />
-              </svg>
-            </button>
-          )}
+          <button
+            type="button"
+            aria-label="Önceki projeler"
+            onClick={() => { /* intentionally left blank - CSS-only peek and no JS scroll */ }}
+            className="absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-white transition-all hover:brightness-110"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" className="rotate-180">
+              <path d="M12 4l8 8-8 8-8-8z" />
+            </svg>
+          </button>
 
           {/* Right gradient fade to indicate more content */}
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black to-transparent z-0" />
 
           {/* Right triangle navigation */}
-          {canScrollRight && (
-            <button
-              type="button"
-              aria-label="Daha fazla projeler"
-              onClick={() => { tabListRef.current?.scrollBy({ left: 240, behavior: 'smooth' }) }}
-              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-white transition-all hover:brightness-110"
-              style={{ pointerEvents: 'auto' }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 4l8 8-8 8-8-8z" />
-              </svg>
-            </button>
-          )}
+          <button
+            type="button"
+            aria-label="Daha fazla projeler"
+            onClick={() => { /* intentionally left blank - CSS-only peek and no JS scroll */ }}
+            className="absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-white transition-all hover:brightness-110"
+            style={{ pointerEvents: 'auto' }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4l8 8-8 8-8-8z" />
+            </svg>
+          </button>
 
           <style jsx global>{`
             .hide-scrollbar::-webkit-scrollbar { display: none; }
             .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          `}</style>
+
+          <style jsx>{`
+            @keyframes peekAnimation {
+              0% { transform: translateX(0); }
+              40% { transform: translateX(-90px); }
+              60% { transform: translateX(-90px); }
+              100% { transform: translateX(0); }
+            }
+            .peek-animate {
+              animation: peekAnimation 2.8s ease-in-out 0.8s 1;
+              will-change: transform;
+            }
           `}</style>
         </div>
 
