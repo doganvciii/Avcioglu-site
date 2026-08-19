@@ -203,31 +203,62 @@ export function ProjectsSection() {
   const peekDoneRef = useRef(false)
   const peekCancelledRef = useRef(false)
   const peekTimeoutRef = useRef<number | null>(null)
+  const peekAnimRef = useRef<number | null>(null)
 
   useEffect(() => {
     const el = tabListRef.current
     const sec = sectionRef.current
     if (!el || !sec || peekDoneRef.current) return
 
-    const onUserInteraction = () => {
+    const cancelPeek = () => {
       peekCancelledRef.current = true
       if (peekTimeoutRef.current) { window.clearTimeout(peekTimeoutRef.current); peekTimeoutRef.current = null }
+      if (peekAnimRef.current) { cancelAnimationFrame(peekAnimRef.current); peekAnimRef.current = null }
     }
+
+    const onUserInteraction = () => cancelPeek()
 
     el.addEventListener('scroll', onUserInteraction, { passive: true })
     el.addEventListener('pointerdown', onUserInteraction)
+
+    const animateScroll = (targetLeft: number, duration: number) => {
+      return new Promise<void>((resolve) => {
+        const startLeft = el.scrollLeft
+        const change = targetLeft - startLeft
+        const startTime = performance.now()
+
+        const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t)
+
+        const step = (now: number) => {
+          const elapsed = now - startTime
+          const t = Math.min(1, elapsed / duration)
+          const eased = easeInOut(t)
+          el.scrollLeft = Math.round(startLeft + change * eased)
+          if (t < 1) {
+            peekAnimRef.current = requestAnimationFrame(step)
+          } else {
+            peekAnimRef.current = null
+            resolve()
+          }
+        }
+
+        peekAnimRef.current = requestAnimationFrame(step)
+      })
+    }
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting && !peekDoneRef.current && !peekCancelledRef.current) {
           peekDoneRef.current = true
-          // peek right then return
-          el.scrollBy({ left: 120, behavior: 'smooth' })
-          // after a short delay, scroll back to start
-          peekTimeoutRef.current = window.setTimeout(() => {
-            if (!peekCancelledRef.current) el.scrollTo({ left: 0, behavior: 'smooth' })
-            peekTimeoutRef.current = null
-          }, 700)
+          // perform a gentle peek to the right over 900ms, then after a short pause return over 900ms
+          animateScroll(Math.min(120, el.scrollWidth - el.clientWidth), 900).then(() => {
+            if (peekCancelledRef.current) return
+            peekTimeoutRef.current = window.setTimeout(() => {
+              if (peekCancelledRef.current) return
+              animateScroll(0, 900)
+              peekTimeoutRef.current = null
+            }, 600)
+          })
         }
       })
     }, { threshold: 0.12 })
@@ -238,7 +269,7 @@ export function ProjectsSection() {
       observer.disconnect()
       el.removeEventListener('scroll', onUserInteraction)
       el.removeEventListener('pointerdown', onUserInteraction)
-      if (peekTimeoutRef.current) window.clearTimeout(peekTimeoutRef.current)
+      cancelPeek()
     }
   }, [])
 
