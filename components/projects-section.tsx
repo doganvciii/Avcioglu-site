@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { Trees, ToyBrick, CarFront, Building2, Waves, Sparkles, ShieldCheck, ArrowUpRight, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Feature = { icon: typeof Trees; label: string }
@@ -226,12 +226,13 @@ export function ProjectsSection() {
         </div>
 
         {/* Tabs */}
-        <div className="mt-12 w-full relative">
+        <div className="mt-12 w-full relative flex items-center">
           <div
             role="tablist"
             aria-label="Projeler"
             ref={tabListRef}
-            className="hide-scrollbar w-full flex flex-nowrap justify-between items-center gap-2 sm:gap-3 border-b border-border overflow-x-auto"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="w-full flex-1 flex flex-nowrap justify-between items-center gap-2 sm:gap-3 border-b border-border overflow-y-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden"
           >
             {projects.map((p, i) => (
               <button
@@ -267,9 +268,7 @@ export function ProjectsSection() {
           )}
 
           {/* Right gradient fade to indicate more content */}
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-20 hidden sm:block">
-            <div className="absolute inset-0 bg-gradient-to-l from-black via-black/80 to-transparent opacity-70" />
-          </div>
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black to-transparent z-0" />
 
           {/* Right triangle navigation */}
           {canScrollRight && (
