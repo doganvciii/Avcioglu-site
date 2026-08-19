@@ -199,6 +199,49 @@ export function ProjectsSection() {
     }
   }, [projects.length])
 
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const peekDoneRef = useRef(false)
+  const peekCancelledRef = useRef(false)
+  const peekTimeoutRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const el = tabListRef.current
+    const sec = sectionRef.current
+    if (!el || !sec || peekDoneRef.current) return
+
+    const onUserInteraction = () => {
+      peekCancelledRef.current = true
+      if (peekTimeoutRef.current) { window.clearTimeout(peekTimeoutRef.current); peekTimeoutRef.current = null }
+    }
+
+    el.addEventListener('scroll', onUserInteraction, { passive: true })
+    el.addEventListener('pointerdown', onUserInteraction)
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !peekDoneRef.current && !peekCancelledRef.current) {
+          peekDoneRef.current = true
+          // peek right then return
+          el.scrollBy({ left: 120, behavior: 'smooth' })
+          // after a short delay, scroll back to start
+          peekTimeoutRef.current = window.setTimeout(() => {
+            if (!peekCancelledRef.current) el.scrollTo({ left: 0, behavior: 'smooth' })
+            peekTimeoutRef.current = null
+          }, 700)
+        }
+      })
+    }, { threshold: 0.12 })
+
+    observer.observe(sec)
+
+    return () => {
+      observer.disconnect()
+      el.removeEventListener('scroll', onUserInteraction)
+      el.removeEventListener('pointerdown', onUserInteraction)
+      if (peekTimeoutRef.current) window.clearTimeout(peekTimeoutRef.current)
+    }
+  }, [])
+
   useEffect(() => {
     if (!lightbox) return
     const onKey = (e: KeyboardEvent) => {
@@ -211,7 +254,7 @@ export function ProjectsSection() {
   }, [lightbox, next, prev])
 
   return (
-    <section id="projects" className="relative py-24 lg:py-32">
+    <section ref={sectionRef} id="projects" className="relative py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
