@@ -202,7 +202,6 @@ export function ProjectsSection() {
   const sectionRef = useRef<HTMLElement | null>(null)
   const peekDoneRef = useRef(false)
   const peekCancelledRef = useRef(false)
-  const peekTimeoutRef = useRef<number | null>(null)
   const peekAnimRef = useRef<number | null>(null)
 
   useEffect(() => {
@@ -212,7 +211,6 @@ export function ProjectsSection() {
 
     const cancelPeek = () => {
       peekCancelledRef.current = true
-      if (peekTimeoutRef.current) { window.clearTimeout(peekTimeoutRef.current); peekTimeoutRef.current = null }
       if (peekAnimRef.current) { cancelAnimationFrame(peekAnimRef.current); peekAnimRef.current = null }
     }
 
@@ -221,15 +219,16 @@ export function ProjectsSection() {
     el.addEventListener('scroll', onUserInteraction, { passive: true })
     el.addEventListener('pointerdown', onUserInteraction)
 
-    const animateScroll = (targetLeft: number, duration: number) => {
+    const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t)
+
+    const animateTo = (targetLeft: number, duration: number) => {
       return new Promise<void>((resolve) => {
         const startLeft = el.scrollLeft
         const change = targetLeft - startLeft
         const startTime = performance.now()
 
-        const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t)
-
         const step = (now: number) => {
+          if (peekCancelledRef.current) { peekAnimRef.current = null; resolve(); return }
           const elapsed = now - startTime
           const t = Math.min(1, elapsed / duration)
           const eased = easeInOut(t)
@@ -246,19 +245,37 @@ export function ProjectsSection() {
       })
     }
 
+    const pause = (ms: number) => {
+      return new Promise<void>((resolve) => {
+        const start = performance.now()
+        const step = (now: number) => {
+          if (peekCancelledRef.current) { peekAnimRef.current = null; resolve(); return }
+          if (now - start >= ms) { peekAnimRef.current = null; resolve(); return }
+          peekAnimRef.current = requestAnimationFrame(step)
+        }
+        peekAnimRef.current = requestAnimationFrame(step)
+      })
+    }
+
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
+      entries.forEach(async (entry) => {
         if (entry.isIntersecting && !peekDoneRef.current && !peekCancelledRef.current) {
           peekDoneRef.current = true
-          // perform a gentle peek to the right over 900ms, then after a short pause return over 900ms
-          animateScroll(Math.min(120, el.scrollWidth - el.clientWidth), 900).then(() => {
+          const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth)
+          const distance = Math.min(100, maxScroll, 100)
+          const target = Math.min(distance, maxScroll)
+          try {
+            // gentle right slide over 1800ms
+            await animateTo(target, 1800)
             if (peekCancelledRef.current) return
-            peekTimeoutRef.current = window.setTimeout(() => {
-              if (peekCancelledRef.current) return
-              animateScroll(0, 900)
-              peekTimeoutRef.current = null
-            }, 600)
-          })
+            // pause 400ms without using setTimeout
+            await pause(400)
+            if (peekCancelledRef.current) return
+            // return to start over 1800ms
+            await animateTo(0, 1800)
+          } catch (e) {
+            // ignore
+          }
         }
       })
     }, { threshold: 0.12 })
